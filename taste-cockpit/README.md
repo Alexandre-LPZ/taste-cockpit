@@ -33,3 +33,8 @@ sans lui, l'humain pose `TASTE_GO=1` dans son terminal pour chaque tour.
 Ce skill exécute Node et Chrome sur la machine ; le bac à sable du compte n'a ni l'un ni l'autre.
 La partie *savoir* (règles, plan, checklist, jamais) existe à part : `taste-brief/SKILL.md`, un
 fichier unique à importer dans Customize → Skills, pour les revues et les briefs en Cowork.
+
+## Banc de test (16/11/2026, bac à sable Linux, Chrome 1 CPU)
+- `devis.mjs` : 6 cas (léger sans GO → passe ; lourd sans GO → STOP code 3 ; `TASTE_GO=1` → passe ; `.cockpit_go` valide → passe ; jeton de 70 min → refusé ; `photos credits` léger / `photos fetch` lourd).
+- Porte réelle sur `assets/starter.html` non modifié : `gate.mjs` lancé via `devis.mjs`, Chrome 1440/390/320, **70 s**, `GATE: FAIL 35 (round 1 of 2)` — 35 défauts attendus sur une page gabarit (liens `#[section id]`, `lang="[en]"`, image vide, pas de moment). Journal écrit.
+- `gate.mjs` : limite par défaut passée de 3 à 2 tours (`--rounds`).

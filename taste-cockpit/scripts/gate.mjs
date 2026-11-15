@@ -3,7 +3,7 @@
   taste-skill gate.mjs - the finish gate: a build may not end while fixable FAILs remain.
 
     node <skill>/scripts/gate.mjs --start <page.html | http://localhost:5173/> [--root dist] [--kind <kind>]
-         [--category "<what is sold>"] [--primary "<main action>"] [--rounds 3] [--new]
+         [--category "<what is sold>"] [--primary "<main action>"] [--rounds 2] [--new]
         arm the gate for a build in this folder; on a build that is still open it only updates what is checked
         (page, url, root, kind, category, primary) and keeps its rounds; --new starts a new build anyway
     node <skill>/scripts/gate.mjs [page.html | url] [--root ..] [--kind ..] [--category ..] [--primary ..]
@@ -57,7 +57,7 @@
   hand counts the page's round). After a hook block, the next stop on the unchanged page is allowed once without a
   round (a question to the user: the block says "just stop again"); other stops on it block twice without a round
   (nothing was fixed), then each counts as one. A changed page starts that count again.
-  Below --rounds (3, set with --start): FAIL, fix and finish again. At the last round: OPEN, told once; every
+  Below --rounds (2 in taste-cockpit, set with --start): FAIL, fix and finish again. At the last round: OPEN, told once; every
   later stop is allowed and the open FAILs go in the report. PASS and OPEN rename build.json to build.done.json.
   The last line of a manual run is exactly one of:
     GATE: PASS | GATE: FAIL <n> (round <k> of <max>) | GATE: OPEN <n> (rounds used up) | GATE: QUICK <n> (...)
@@ -606,7 +606,7 @@ const dot = dotOf(projDir);
 const markerFile = path.join(dot, 'build.json'), stateFile = path.join(dot, 'gate.json'), ledgerFile = path.join(dot, 'gate-blocks.json');
 const waiverFile = path.join(dot, 'waivers.json'), gateDir = path.join(dot, 'gate');
 T.file = stateFile;
-const roundsArg = () => { const r = opt('rounds'); return typeof r === 'string' && /^\d+$/.test(r) ? Math.max(1, Math.min(10, Number(r))) : 3; };
+const roundsArg = () => { const r = opt('rounds'); return typeof r === 'string' && /^\d+$/.test(r) ? Math.max(1, Math.min(10, Number(r))) : 2; };
 const kindArg = () => { const k = (str('kind') || str('page') || '').toLowerCase(); return KINDS.test(k) ? k : null; };
 // what --start and a manual run may set on the marker; --rounds only on a new build
 function applyFlags(m) {
@@ -630,7 +630,7 @@ if (START) {
   if (!m.kind) { const p = findPage(projDir, m); if (p && p.file) { try { m.kind = kindOf(fs.readFileSync(p.file, 'utf8')) || null; } catch { /* unreadable */ } } }
   writeJson(markerFile, m);
   const what = m.url || m.page || '(the page, found when checked)';
-  if (keep) console.log(`gate: a build is already open here (round ${st && st.start === old.start ? st.round || 0 : 0} of ${old.rounds || 3}); now checking ${what}${m.root ? ` with --root ${m.root}` : ''}. Its rounds stay${opt('rounds') !== undefined ? ' (--rounds is set only for a new build: --new)' : ''}.`);
+  if (keep) console.log(`gate: a build is already open here (round ${st && st.start === old.start ? st.round || 0 : 0} of ${old.rounds || 2}); now checking ${what}${m.root ? ` with --root ${m.root}` : ''}. Its rounds stay${opt('rounds') !== undefined ? ' (--rounds is set only for a new build: --new)' : ''}.`);
   else console.log(`gate: build started for ${what}${m.kind ? ` (${m.kind})` : ''}, ${m.rounds} round${m.rounds > 1 ? 's' : ''}; finish with: ${GATE}`);
   process.exit(0);
 }
@@ -650,7 +650,7 @@ if (!marker || typeof marker !== 'object' || typeof marker.start !== 'string') {
 }
 if (!state || (state.start ?? null) !== marker.start) state = { start: marker.start, round: 0, idle: 0, errors: 0, status: 'active', history: [] };
 T.state = state;
-const MAX = Math.max(1, Math.min(10, Math.floor(Number(marker.rounds)) || 3));
+const MAX = Math.max(1, Math.min(10, Math.floor(Number(marker.rounds)) || 2));
 state.max = MAX;
 const save = () => { state.at = new Date().toISOString(); writeJson(stateFile, state); T.saved = true; };
 if (!HOOK && !QUICK) {
