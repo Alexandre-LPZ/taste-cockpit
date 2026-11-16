@@ -30,9 +30,12 @@ Prérequis : Node 22+, Chrome/Edge/Chromium. Le plugin ultracode-cockpit est rec
 sans lui, l'humain pose `TASTE_GO=1` dans son terminal pour chaque tour.
 
 ## Pourquoi pas sur le compte Claude (Cowork / chat)
-Ce skill exécute Node et Chrome sur la machine ; le bac à sable du compte n'a ni l'un ni l'autre.
-La partie *savoir* (règles, plan, checklist, jamais) existe à part : `taste-brief/SKILL.md`, un
-fichier unique à importer dans Customize → Skills, pour les revues et les briefs en Cowork.
+Pas pour une question de moteur : le bac à sable Cowork a Node et Chrome (vérifié le 16/11/2026,
+porte exécutée en 70 s). Deux raisons : un skill de 30 Mo n'est pas fait pour l'import compte, et
+surtout le canal de GO humain (jeton du plugin ultracode-cockpit, ou `TASTE_GO=1` tapé par l'humain
+dans le terminal qui exécute) n'existe qu'en Claude Code — en Cowork, `devis.mjs` dirait STOP à
+chaque script lourd. La partie savoir existe à part : `taste-brief/SKILL.md`, un fichier unique à
+importer dans Customize → Skills, pour les revues et les briefs en Cowork.
 
 ## Banc de test (16/11/2026, bac à sable Linux, Chrome 1 CPU)
 - `devis.mjs` : 6 cas (léger sans GO → passe ; lourd sans GO → STOP code 3 ; `TASTE_GO=1` → passe ; `.cockpit_go` valide → passe ; jeton de 70 min → refusé ; `photos credits` léger / `photos fetch` lourd).
